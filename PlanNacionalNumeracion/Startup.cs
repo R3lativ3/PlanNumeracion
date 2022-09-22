@@ -33,7 +33,7 @@ namespace PlanNacionalNumeracion
             services.AddControllers();
             // BASE DE DATOS
             services.AddSingleton<IConfiguration>(Configuration);
-            Global.ConnectionString = Configuration.GetConnectionString("DevelopmentATT");
+            Global.ConnectionString = Configuration.GetConnectionString("localdb");
 
             // INYECCION DEPENDENCIAS
             // services.AddScoped<IActividad, ActividadService>();
