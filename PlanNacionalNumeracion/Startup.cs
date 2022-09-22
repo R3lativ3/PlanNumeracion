@@ -33,7 +33,11 @@ namespace PlanNacionalNumeracion
             services.AddControllers();
             // BASE DE DATOS
             services.AddSingleton<IConfiguration>(Configuration);
+<<<<<<< HEAD
             Global.ConnectionString = Configuration.GetConnectionString("localDb");
+=======
+            Global.ConnectionString = Configuration.GetConnectionString("localdb");
+>>>>>>> 447041186293578429c72c82f906c46d5655e81a
 
             // INYECCION DEPENDENCIAS
             // services.AddScoped<IActividad, ActividadService>();
