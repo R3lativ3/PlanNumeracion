@@ -34,6 +34,32 @@ namespace PlanNacionalNumeracion.Services
             }
 
         }
+
+        public CredencialesValidacionCarga ObtenerCredencialesValidacionCargaPorDestino(int idDestino)
+        {
+            try
+            {
+                string consulta = @"
+                    SELECT id, hostname, puerto, sid, tabla, id_PNN_destino
+                    FROM PNN_credenciales_validacion_carga WITH(NOLOCK)
+                    id_PNN_destino = @idDestino
+                ";
+                using (IDbConnection conn = new SqlConnection(Global.ConnectionString))
+                {
+                    if (conn.State == ConnectionState.Closed)
+                        conn.Open();
+
+                    var resp = conn.QueryFirstOrDefault<CredencialesValidacionCarga>(consulta, new { idDestino });
+                    return resp;
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+        }
+
         public Response AgregarCredencialesValidacionCarga(CredencialesValidacionCargaPost credencialesValidacionCargaPost)
         {
             try

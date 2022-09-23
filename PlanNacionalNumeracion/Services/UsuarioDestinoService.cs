@@ -27,6 +27,24 @@ public class UsuarioDestinoService
         }
     }
 
+
+    public UsuarioDestino ObtenerUsuarioDestinoPorIdDestino(int id)
+    {
+        string consulta = @"
+            SELECT id, usuario, psw, id_PNN_destino
+            FROM PNN_usuario_destino WITH(NOLOCK)
+            WHERE id_PNN_destino = @id
+        ";
+        using (IDbConnection conn = new SqlConnection(Global.ConnectionString))
+        {
+            if (conn.State == ConnectionState.Closed)
+                conn.Open();
+
+            var resp = conn.QueryFirstOrDefault<UsuarioDestino>(consulta, new { id });
+            return resp;
+        }
+    }
+
     public Response AgregarUsuarioDestino (UsuarioDestinoPost usuarioDestinoPost)
     {
         try

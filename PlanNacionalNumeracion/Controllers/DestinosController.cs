@@ -31,25 +31,6 @@ namespace PlanNacionalNumeracion.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
-        [HttpPost]
-        public ActionResult<Response> AddFileToTranscription([FromForm]int id, IFormFile file)
-        {
-            try
-            {
-                var cargaService = new CargaService();
-                var response = cargaService.CargarArchivoDestino(id, file);
-                if(response.Status == 0)
-                {
-                    return Ok(response);
-                }
-                return BadRequest(response);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
     }
 }
 

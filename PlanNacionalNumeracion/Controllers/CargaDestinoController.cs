@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using PlanNacionalNumeracion.Models;
 using PlanNacionalNumeracion.Models.Destino;
 using PlanNacionalNumeracion.Models.ModelsYat;
@@ -26,17 +27,32 @@ namespace PlanNacionalNumeracion.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        /*
-        public ActionResult<List<CargaDestino>> Get()
+
+        /// <summary>
+        /// Endpoint para recibir los archivos que se van a enviar a los servidores
+        /// </summary>
+        /// <param name="destinos">Arreglo que contiene todos los id's de destino (para en base a ese id ir a buscar credenciales, etc)</param>
+        /// <param name="archivo">Archivo que se va a depositar en los destinos</param>
+        /// <returns>confirmacion si se realizo o no, ademas envia un email con el resultado</returns>
+        [HttpPost("send-file")]
+        public ActionResult<Response> AddFileToTranscription([FromForm] int[] destinos, IFormFile archivo)
         {
-            return new List<CargaDestino>() {
+            try
+            {
+                var cargaService = new CargaService();
+                var response = cargaService.CargarArchivoDestino(destinos, archivo);
+                if (response.Status == 0)
+                {
+                    return Ok(response);
+                }
+                return BadRequest(response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
-                new CargaDestino() { id=1, fechaCarga = DateTime.Now, nombreArchivo="archivo1", idPnnDestino=1,idPnnUsuario=1 },
-                new CargaDestino() { id=2, fechaCarga = DateTime.Now, nombreArchivo="archivo2", idPnnDestino=2,idPnnUsuario=2 },
-
-            };
-
-        }*/
         [HttpPost]
         public ActionResult<Response> AddFileToTranscription(CargaDestinoPost cargaDestinoPost)
         {
