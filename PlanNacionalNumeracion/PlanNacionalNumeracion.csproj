@@ -10,6 +10,7 @@
     <PackageReference Include="Dapper" Version="2.0.123" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.0.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,9 +21,20 @@
     <None Remove="Microsoft.Data.SqlClient" />
     <None Remove="System.Data.SqlClient" />
     <None Remove="Models\Destino\" />
+    <None Remove="Models\Authentication\" />
+    <None Remove="EncriptadorMA" />
+    <None Remove="Interfaces\" />
+    <None Remove="Microsoft.AspNetCore.Authentication.JwtBearer" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Common\" />
+    <Folder Include="Models\Authentication\" />
+    <Folder Include="Interfaces\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="EncriptadorMA">
+      <HintPath>..\..\..\..\Downloads\EncriptadorMA.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
 </Project>

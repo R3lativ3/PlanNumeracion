@@ -12,6 +12,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using PlanNacionalNumeracion.Common;
+using PlanNacionalNumeracion.Services;
+using PlanNacionalNumeracion.Interfaces;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 namespace PlanNacionalNumeracion
 {
@@ -31,6 +38,32 @@ namespace PlanNacionalNumeracion
         {
 
             services.AddControllers();
+
+            var appSettingsSection = Configuration.GetSection("AppSettings");
+            services.Configure<AppSettings>(appSettingsSection);
+            //JWT
+            var appSettings = appSettingsSection.Get<AppSettings>();
+            var key = Encoding.ASCII.GetBytes(appSettings.Secret);
+
+            services.AddAuthentication(d => {
+                d.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                d.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+                .AddJwtBearer(d => {
+                    d.RequireHttpsMetadata = false;
+                    d.SaveToken = true;
+                    d.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(key),
+                        ValidateIssuer = false,
+                        ValidateLifetime = true,
+                        ValidateAudience = false,
+                        //   ClockSkew = TimeSpan.Zero,
+                    };
+                });
+
+
             // BASE DE DATOS
             services.AddSingleton<IConfiguration>(Configuration);
 
@@ -38,7 +71,7 @@ namespace PlanNacionalNumeracion
 
 
             // INYECCION DEPENDENCIAS
-            // services.AddScoped<IActividad, ActividadService>();
+            services.AddScoped<IAuthentication, AuthenticationService>();
 
             services.AddSwaggerGen(c =>
             {
@@ -82,6 +115,18 @@ namespace PlanNacionalNumeracion
                 });
             });
 
+            services.Configure<IISServerOptions>(options => options.MaxRequestBodySize = int.MaxValue);
+            services.Configure<KestrelServerOptions>(options =>
+            {
+                options.Limits.MaxRequestBodySize = int.MaxValue;
+            });
+            services.Configure<FormOptions>(opt =>
+            {
+                opt.ValueLengthLimit = int.MaxValue;
+                opt.MultipartBodyLengthLimit = int.MaxValue;
+                opt.MultipartHeadersLengthLimit = int.MaxValue;
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -108,6 +153,7 @@ namespace PlanNacionalNumeracion
             {
                 endpoints.MapControllers();
             });
+
         }
     }
 }

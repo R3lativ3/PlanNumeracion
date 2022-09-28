@@ -35,17 +35,14 @@ namespace PlanNacionalNumeracion.Controllers
         /// <param name="archivo">Archivo que se va a depositar en los destinos</param>
         /// <returns>confirmacion si se realizo o no, ademas envia un email con el resultado</returns>
         [HttpPost("send-file")]
-        public ActionResult<Response> AddFileToTranscription([FromForm] int[] destinos, IFormFile archivo)
+        public ActionResult<List<Response>> AddFileToTranscription([FromForm] UploadCargaDestino upload)
         {
             try
             {
-                var cargaService = new CargaService();
-                var response = cargaService.CargarArchivoDestino(destinos, archivo);
-                if (response.Status == 0)
-                {
-                    return Ok(response);
-                }
-                return BadRequest(response);
+                var cargaService = new CargaDestinoService();
+                var response = cargaService.CargarArchivoDestino(upload.destinos, upload.archivo);
+
+                return Ok(response);
             }
             catch (Exception ex)
             {
