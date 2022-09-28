@@ -12,7 +12,7 @@ public class UsuarioDestinoService
     public List<UsuarioDestino> ObtenerTodosUsuarioDestino()
     {
         string consulta = @"
-                            Select id, usuario, psw, id_PNN_destino IdPNNDestino
+                            Select id, usuario, psw, id_PNN_destino as IdPNNDestino
                             From PNN_usuario_destino WITH(NOLOCK)";
         using (IDbConnection conn = new SqlConnection(Global.ConnectionString))
         {
