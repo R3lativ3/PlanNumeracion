@@ -50,6 +50,27 @@ namespace PlanNacionalNumeracion.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        //agregar destinos a la  base de datos.
+        [HttpPost("destino-Endpoint")]
+        public ActionResult<Response> AddFileToTranscription(DestinoPost destinoPost)
+        {
+            try
+            {
+                DestinosService destinoService = new DestinosService();
+                Response response = destinoService.AgregarDestino(destinoPost);
+                if (response.Status == 0)
+                {
+                    return Ok(response);
+                }
+                return BadRequest(response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
     }
 }
 
