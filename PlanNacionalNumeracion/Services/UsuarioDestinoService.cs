@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using Dapper;
 using PlanNacionalNumeracion.Common;
 using PlanNacionalNumeracion.Models;
+using PlanNacionalNumeracion.Models.Usuario;
 using PlanNacionalNumeracion.Models.UsuarioDestino;
 
 public class UsuarioDestinoService
@@ -69,6 +70,32 @@ public class UsuarioDestinoService
         catch (Exception ex)
         {
             return new Response() { Status = 1, Message = ex.Message };
+        }
+
+
+    }
+
+    public UsuarioDestino GetUsuarioDestino(int id)
+    {
+        try
+        {
+            string query = @"
+            SELECT id, usuario, psw, id_PNN_destino as IdPNNDestino
+            FROM PNN_usuario_destino WITH(NOLOCK)
+            WHERE id = @id ";
+            using (IDbConnection conn = new SqlConnection(Global.ConnectionString))
+            {
+                if (conn.State == ConnectionState.Closed)
+                {
+                    conn.Open();
+                }
+                var usuario = conn.QueryFirstOrDefault<UsuarioDestino>(query, new { id = id });
+                return usuario;
+            }
+        }
+        catch (Exception ex)
+        {
+            throw ex;
         }
     }
 }

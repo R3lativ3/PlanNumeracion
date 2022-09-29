@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using PlanNacionalNumeracion.Models.UsuarioDestino;
 using PlanNacionalNumeracion.Models;
 using PlanNacionalNumeracion.Services;
+using PlanNacionalNumeracion.Models.Usuario;
 
 namespace PlanNacionalNumeracion.Controllers
 {
@@ -43,6 +44,16 @@ namespace PlanNacionalNumeracion.Controllers
             {
                 return new Response() { Status = 1, Message = ex.Message };
             }
+        }
+
+        [HttpGet("{id}")]
+        public ActionResult<UsuarioDestino> GetUsuarioById(int id)
+        {
+            UsuarioDestinoService usuarioDestino = new UsuarioDestinoService();
+            var respuesta = usuarioDestino.GetUsuarioDestino(id);
+            if (respuesta == null)
+                return NotFound("Usuario Destino Inexistente");
+            return Ok(respuesta);
         }
     }
 }

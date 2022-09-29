@@ -59,4 +59,28 @@ public class ValidacionCargaService
             return new Response() { Status = 1, Message = ex.Message };
         }
     }
+
+    public ValidacionCarga GetValidacionCarga(int id)
+    {
+        try
+        {
+            string query = @"
+            SELECT id, fecha_validacion FechaValidacion, estatus, comentario, id_PNN_credenciales_validacion_carga as IdPNNCredencialesValidacionCarga, id_PNN_Destino as IdPNNDestino
+            FROM PNN_validacion_carga
+            WHERE id = @id" ;
+            using (IDbConnection conn = new SqlConnection(Global.ConnectionString))
+            {
+                if (conn.State == ConnectionState.Closed)
+                {
+                    conn.Open();
+                }
+                var validacionCarga = conn.QueryFirstOrDefault<ValidacionCarga>(query, new { id = id });
+                return validacionCarga;
+            }
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
 }

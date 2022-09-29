@@ -6,6 +6,7 @@ using System.Data.SqlClient;
 using Dapper;
 using System;
 using PlanNacionalNumeracion.Models;
+using EncriptadorMA;
 
 public class UsuarioService
 {
@@ -41,13 +42,15 @@ public class UsuarioService
                     {
                         conexion.Open();
                     }
+                Encrypt encriptador = new Encrypt();
+                string psw = encriptador.Encriptar(usuarioPost.Psw);
                     // opcion 1
                     DynamicParameters paramateres = new DynamicParameters();
                     paramateres.Add("@nombres", usuarioPost.Nombres);
                     paramateres.Add("@apellido_materno", usuarioPost.ApellidoMaterno);
                     paramateres.Add("@apellido_paterno", usuarioPost.ApellidoPaterno);
                     paramateres.Add("@attuid", usuarioPost.Attuid);
-                    paramateres.Add("@psw", usuarioPost.Psw);
+                    paramateres.Add("@psw", encriptador.Encriptar(usuarioPost.Psw));
                     conexion.Execute(query, paramateres);
                     
                     /*
@@ -67,6 +70,31 @@ public class UsuarioService
         catch(Exception ex)
         {
             return new Response() { Status = 1, Message = ex.Message };
+        }
+    }
+
+    public Usuario GetUsuario(int id)
+    {
+        try
+        {
+            string query = @"
+                    SELECT id, nombres, apellido_paterno as ApellidoPaterno, apellido_materno as ApellidoMaterno, attuid, psw 
+                    FROM PNN_usuario WITH(NOLOCK)
+                    WHERE id = @id
+                ";
+            using (IDbConnection conn = new SqlConnection(Global.ConnectionString))
+            {
+                if (conn.State == ConnectionState.Closed)
+                {
+                    conn.Open();
+                }
+                var usuario = conn.QueryFirstOrDefault<Usuario>(query, new { id = id });
+                return usuario;
+            }
+        }
+        catch (Exception ex)
+        {
+            throw ex;
         }
     }
 }

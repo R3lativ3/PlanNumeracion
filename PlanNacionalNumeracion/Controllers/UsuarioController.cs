@@ -3,6 +3,7 @@ using System;
 using Microsoft.AspNetCore.Mvc;
 using PlanNacionalNumeracion.Models.Usuario;
 using PlanNacionalNumeracion.Models;
+using System.Threading.Tasks;
 
 namespace PlanNacionalNumeracion.Controllers
 {
@@ -42,6 +43,16 @@ namespace PlanNacionalNumeracion.Controllers
             {
                 return new Response() { Status = 1, Message = ex.Message };
             }
+        }
+
+        [HttpGet("{id}")]
+        public ActionResult<Usuario> GetUsuario(int id)
+        {
+            UsuarioService usuario = new UsuarioService();
+            var respuesta = usuario.GetUsuario(id);
+            if (respuesta == null)
+                return NotFound("Usuario Inexistente");
+            return Ok(respuesta);
         }
     }
 }

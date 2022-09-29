@@ -3,6 +3,7 @@ using PlanNacionalNumeracion.Models;
 using PlanNacionalNumeracion.Models.ValidacionCarga;
 using System.Collections.Generic;
 using System;
+using PlanNacionalNumeracion.Models.UsuarioDestino;
 
 namespace PlanNacionalNumeracion.Controllers
 {
@@ -45,7 +46,17 @@ namespace PlanNacionalNumeracion.Controllers
             {
                 return new Response() { Status = 1, Message = ex.Message };
             }
-        } 
+        }
+
+        [HttpGet("{id}")]
+        public ActionResult<ValidacionCarga> GetValidacionCargaById(int id)
+        {
+            ValidacionCargaService validacionCargaService = new ValidacionCargaService();
+            var respuesta = validacionCargaService.GetValidacionCarga(id);
+            if (respuesta == null)
+                return NotFound("Validación Carga Inexistente");
+            return Ok(respuesta);
+        }
     }
     
 }
