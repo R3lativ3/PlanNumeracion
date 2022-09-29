@@ -39,6 +39,30 @@ namespace PlanNacionalNumeracion.Services
             }
         }
 
+        public Destino ObtenerDestino(int id)
+        {
+            try
+            {
+                string query = @"
+                    SELECT id, nombre, ruta, ip, puerto
+                    FROM PNN_destino WITH(NOLOCK)
+                    WHERE id = @id
+                ";
+                using (IDbConnection conn = new SqlConnection(Global.ConnectionString))
+                {
+                    if (conn.State == ConnectionState.Closed)
+                        conn.Open();
+
+                    var respuesta = conn.QueryFirstOrDefault<Destino>(query, new { id });
+                    return respuesta;
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public Response AgregarDestino(DestinoPost destinoPost)
         {
             try

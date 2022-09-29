@@ -12,7 +12,7 @@ public class UsuarioDestinoService
     public List<UsuarioDestino> ObtenerTodosUsuarioDestino()
     {
         string consulta = @"
-                            Select id, usuario, psw, id_PNN_destino IdPNNDestino
+                            Select id, usuario, psw, id_PNN_destino as IdPNNDestino
                             From PNN_usuario_destino WITH(NOLOCK)";
         using (IDbConnection conn = new SqlConnection(Global.ConnectionString))
         {
@@ -24,6 +24,24 @@ public class UsuarioDestinoService
             //var list = new List<UsuarioDestino>();             // opcion #2
             list = conn.Query<UsuarioDestino>(consulta).AsList();
             return list;
+        }
+    }
+
+
+    public UsuarioDestino ObtenerUsuarioDestinoPorIdDestino(int id)
+    {
+        string consulta = @"
+            SELECT id, usuario, psw, id_PNN_destino
+            FROM PNN_usuario_destino WITH(NOLOCK)
+            WHERE id_PNN_destino = @id
+        ";
+        using (IDbConnection conn = new SqlConnection(Global.ConnectionString))
+        {
+            if (conn.State == ConnectionState.Closed)
+                conn.Open();
+
+            var resp = conn.QueryFirstOrDefault<UsuarioDestino>(consulta, new { id });
+            return resp;
         }
     }
 

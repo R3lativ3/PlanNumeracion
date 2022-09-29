@@ -14,8 +14,8 @@ public class ValidacionCargaService
     public List<ValidacionCarga> ObtenerTodos()
     {
         string consulta = @"
-            Select id, fecha_validacion FechaValidacion, estatus, comentario, id_PNN_credenciales_validacion_carga IdCredencialesValidacionCarga, id_PNN_Destino IdDestino
-            From PNN_validacion_carga";
+            SELECT id, fecha_validacion FechaValidacion, estatus, comentario, id_PNN_credenciales_validacion_carga as IdPNNCredencialesValidacionCarga, id_PNN_Destino as IdPNNDestino
+            FROM PNN_validacion_carga";
         using (IDbConnection conn = new SqlConnection(Global.ConnectionString))
         {
             if (conn.State == ConnectionState.Closed)
