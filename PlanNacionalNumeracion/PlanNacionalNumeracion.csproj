@@ -35,6 +35,9 @@
     <Reference Include="EncriptadorMA">
       <HintPath>..\..\..\..\EncriptadorMA.dll</HintPath>
     </Reference>
+    <Reference Include="EncriptadorMA">
+      <HintPath>..\..\..\..\Downloads\EncriptadorMA.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
 </Project>

@@ -145,7 +145,7 @@ namespace PlanNacionalNumeracion
 
             app.UseCors(_Cors);
 
-            //app.UseAuthentication();
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

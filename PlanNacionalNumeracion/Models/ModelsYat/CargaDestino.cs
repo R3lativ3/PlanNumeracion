@@ -8,9 +8,12 @@ namespace PlanNacionalNumeracion.Models.ModelsYat
         public int Id { get; set; }
         public DateTime FechaCarga { get; set; }
         public string NombreArchivo { get; set; }
-        public int IdPnnDestino { get; set; }
-        public int IdPnnUsuario { get; set; }
-
+        public string nombreDestino { get; set; }
+        public string pathDestino { get; set; }
+        public string ipDestino { get; set; }
+        public string nombreUsuario { get; set; }
+        public string apellidoUsuario { get; set; }
+        public string attuid { get; set; }
     }
 
     public class UploadCargaDestino

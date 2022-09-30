@@ -13,6 +13,7 @@ using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Http;
 using Renci.SshNet;
 using System.IO;
+using EncriptadorMA;
 
 namespace PlanNacionalNumeracion.Services
 {
@@ -22,8 +23,14 @@ namespace PlanNacionalNumeracion.Services
         {
             try
             {
-                string consulta = @"SELECT id,fecha_carga fechaCarga,nombre_archivo nombreArchivo,id_PNN_destino  idPnnDestino, id_PNN_usuario  idPnnUsuario
-                                 FROM	PNN_carga_destino WITH(NOLOCK)";
+                string consulta = @"
+                    SELECT a.id, a.fecha_carga fechaCarga, a.nombre_archivo nombreArchivo, b.nombre nombreDestino, b.ruta pathDestino, b.ip ipDestino, c.nombres nombreUsuario, c.apellido_paterno apellidoUsuario, c.attuid
+                    FROM PNN_carga_destino a WITH(NOLOCK)
+                    join PNN_destino b
+                    	on b.id = a.id_PNN_destino
+                    join PNN_usuario c
+                    	on c.id = a.id_PNN_usuario
+                ";
                 using (IDbConnection conn = new SqlConnection(Global.ConnectionString))
                 {
                     if (conn.State == ConnectionState.Closed)
@@ -101,11 +108,12 @@ namespace PlanNacionalNumeracion.Services
             }
         }
 
-        public List<Response> CargarArchivoDestino(int[] idDestino, IFormFile archivo)
+        public List<Response> CargarArchivoDestino(int[] idDestino, IFormFile archivo, string attuid)
         {
             var response = new List<Response>();
             var usuarioDestinoService = new UsuarioDestinoService();
             var destinoService = new DestinosService();
+            var desenc = new Encrypt();
             foreach (var id in idDestino)
             {
                 try
@@ -115,7 +123,7 @@ namespace PlanNacionalNumeracion.Services
                     if (credenciales is not null && destino is not null)
                     {
 
-                        var uploaded = CargarArchivoServidor(destino.Ip, destino.Puerto, credenciales.Usuario, credenciales.Psw, archivo);
+                        var uploaded = CargarArchivoServidor(destino.Ip, destino.Puerto, credenciales.Usuario, desenc.Desencriptar(credenciales.Psw), archivo);
                         if (uploaded.Status == 1)
                         {
                             response.Add(uploaded);

@@ -80,7 +80,8 @@ namespace PlanNacionalNumeracion.Services
                         {
                             new Claim("ID", authRequest.Id.ToString()),
                             new Claim("ATTUID", authRequest.Attuid),
-                            new Claim("NOMBRE", authRequest.Nombres+" "+authRequest.ApellidoPaterno+" "+authRequest.ApellidoMaterno)
+                            new Claim("NOMBRE", authRequest.Nombres+" "+authRequest.ApellidoPaterno+" "+authRequest.ApellidoMaterno),
+                            new Claim(ClaimTypes.Role, "General")
                         }
                     ),
                 Expires = DateTime.UtcNow.AddMinutes(60),

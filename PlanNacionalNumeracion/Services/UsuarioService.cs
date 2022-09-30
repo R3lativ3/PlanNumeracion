@@ -34,39 +34,30 @@ public class UsuarioService
         try
         {
             string query = @"
-                            INSERT INTO PNN_usuario(nombres, apellido_materno, apellido_paterno, attuid, psw)
-                    VALUES (@nombres, @apellido_materno, @apellido_paterno, @attuid, @psw)";
+                INSERT INTO PNN_usuario(nombres, apellido_materno, apellido_paterno, attuid, psw)
+                VALUES (@nombres, @apellido_materno, @apellido_paterno, @attuid, @psw)
+            ";
 
-                using (IDbConnection conexion = new SqlConnection(Global.ConnectionString))
+            using (IDbConnection conexion = new SqlConnection(Global.ConnectionString))
+            {
+                if (conexion.State == ConnectionState.Closed)
                 {
-                    if (conexion.State == ConnectionState.Closed)
-                    {
-                        conexion.Open();
-                    }
+                    conexion.Open();
+                }
                 Encrypt encriptador = new Encrypt();
                 string psw = encriptador.Encriptar(usuarioPost.Psw);
-                    // opcion 1
-                    DynamicParameters paramateres = new DynamicParameters();
-                    paramateres.Add("@nombres", usuarioPost.Nombres);
-                    paramateres.Add("@apellido_materno", usuarioPost.ApellidoMaterno);
-                    paramateres.Add("@apellido_paterno", usuarioPost.ApellidoPaterno);
-                    paramateres.Add("@attuid", usuarioPost.Attuid);
-                    paramateres.Add("@psw", encriptador.Encriptar(usuarioPost.Psw));
-                    conexion.Execute(query, paramateres);
-                    
-                    /*
-                    // opcion 2
-                    
-                    var respuesta = conexion.ExecuteScalar(query, new
-                    {
-                        nombres = usuarioPost.nombres,
-                        apellido_materno = usuarioPost.apellidoMaterno,
-                        apellido_paternox = usuarioPost.apellidoPaterno,
-                        attuid = usuarioPost.attuid,
-                        psw = usuarioPost.psw
-                    });*/
-                    return new Response() { Status = 0, Message = "Se ha creado el registro exitosamente"};
-                }
+
+                DynamicParameters paramateres = new DynamicParameters();
+                paramateres.Add("@nombres", usuarioPost.Nombres);
+                paramateres.Add("@apellido_materno", usuarioPost.ApellidoMaterno);
+                paramateres.Add("@apellido_paterno", usuarioPost.ApellidoPaterno);
+                paramateres.Add("@attuid", usuarioPost.Attuid);
+                paramateres.Add("@psw", encriptador.Encriptar(usuarioPost.Psw));
+
+                conexion.Execute(query, paramateres);
+
+                return new Response() { Status = 0, Message = "Se ha creado el registro exitosamente"};
+            }
         }
         catch(Exception ex)
         {
@@ -114,8 +105,16 @@ public class UsuarioService
                 {
                     conn.Open();
                 }
-                var updated = conn.Execute(update, new {  nombres= usuarioPost.Nombres, apellido_paterno = usuarioPost.ApellidoPaterno, 
-                                                          apellido_materno = usuarioPost.ApellidoMaterno, attuid = usuarioPost.Attuid, psw = usuarioPost.Psw, id });
+
+                var enc = new Encrypt();
+                var updated = conn.Execute(update, new {
+                    nombres= usuarioPost.Nombres,
+                    apellido_paterno = usuarioPost.ApellidoPaterno, 
+                    apellido_materno = usuarioPost.ApellidoMaterno,
+                    attuid = usuarioPost.Attuid,
+                    psw = enc.Encriptar(usuarioPost.Psw),
+                    id
+                });
                 return new Response { Status = 0, Message = "Actualizado correctamente" };
             }
         }
@@ -127,14 +126,15 @@ public class UsuarioService
 
     public Response DeleteUsuario(int id)
     {
-        
         try
         {
             string query = @"DELETE FROM PNN_usuario WHERE id = @id";
             using (IDbConnection conn = new SqlConnection(Global.ConnectionString))
             {
-                if (conn.State == ConnectionState.Closed) conn.Open();
-                var delete = conn.Execute(query, new { id });
+                if (conn.State == ConnectionState.Closed)
+                    conn.Open();
+
+                conn.Execute(query, new { id });
                 return new Response { Status = 0, Message = "Usuario Eliminado Correctamente"};
             }
         }

@@ -5,6 +5,8 @@ using PlanNacionalNumeracion.Models.UsuarioDestino;
 using PlanNacionalNumeracion.Models;
 using PlanNacionalNumeracion.Services;
 using PlanNacionalNumeracion.Models.Usuario;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
 
 namespace PlanNacionalNumeracion.Controllers
 {
@@ -17,6 +19,7 @@ namespace PlanNacionalNumeracion.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "General")]
         public ActionResult<List<UsuarioDestino>> ObtenerTodosUsuarioDestino()
         {
             try
@@ -32,6 +35,7 @@ namespace PlanNacionalNumeracion.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "General")]
         public ActionResult<Response> AddUsuarioDestino(UsuarioDestinoPost usuarioDestinoPost)
         {
             try
@@ -47,30 +51,53 @@ namespace PlanNacionalNumeracion.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "General")]
         public ActionResult<UsuarioDestino> GetUsuarioById(int id)
         {
-            UsuarioDestinoService usuarioDestino = new UsuarioDestinoService();
-            var respuesta = usuarioDestino.GetUsuarioDestino(id);
-            if (respuesta == null)
-                return NotFound("Usuario Destino Inexistente");
-            return Ok(respuesta);
+            try
+            {
+                UsuarioDestinoService usuarioDestino = new UsuarioDestinoService();
+                var respuesta = usuarioDestino.GetUsuarioDestino(id);
+                if (respuesta == null)
+                    return NotFound("Usuario Destino Inexistente");
+                return Ok(respuesta);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message, null, 500);
+            }
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "General")]
         public ActionResult<Response> PutUsuarioDestino(int id, [FromBody] UsuarioDestinoPost usuarioDestinoPost)
         {
-            UsuarioDestinoService usuarioDestinoService = new UsuarioDestinoService();
-            var respuesta = usuarioDestinoService.UpdateUsuarioDestino(id, usuarioDestinoPost);
-            return Ok(respuesta);
-
+            try
+            {
+                UsuarioDestinoService usuarioDestinoService = new UsuarioDestinoService();
+                var respuesta = usuarioDestinoService.UpdateUsuarioDestino(id, usuarioDestinoPost);
+                return Ok(respuesta);
+            }
+            catch(Exception ex)
+            {
+                return Problem(ex.Message, null, 500);
+            }
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "General")]
         public ActionResult<Response> DeleteUsuarioDestino(int id)
         {
-            UsuarioDestinoService usuarioDestinoService = new UsuarioDestinoService();
-            var respuesta = usuarioDestinoService.DeleteUsuarioDestino(id);
-            return Ok(respuesta);
+            try
+            {
+                UsuarioDestinoService usuarioDestinoService = new UsuarioDestinoService();
+                var respuesta = usuarioDestinoService.DeleteUsuarioDestino(id);
+                return Ok(respuesta);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message, null, 500);
+            }
         }
     }
 }

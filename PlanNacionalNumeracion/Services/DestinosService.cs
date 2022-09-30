@@ -71,21 +71,12 @@ namespace PlanNacionalNumeracion.Services
                     INSERT INTO PNN_destino (nombre, ruta, ip, puerto)  OUTPUT INSERTED.*
                     VALUES (@nombre, @ruta, @ip, @puerto);
                 ";
-                using (IDbConnection conn = new SqlConnection(Global.ConnectionString)) // utilizar la cadena de conexion que establecimos en el archivo Startup.cs
+                using (IDbConnection conn = new SqlConnection(Global.ConnectionString))
                 {
-                    if (conn.State == ConnectionState.Closed)                           // validar si la conexion esta cerrada, si lo esta, abrir la conexion
+                    if (conn.State == ConnectionState.Closed)              
                     {
                         conn.Open();
                     }
-
-                    /*
-                    DynamicParameters parameters = new DynamicParameters();             // instanciar objeto que vamos a insertar
-                    parameters.Add("@nombre", destinoPost.Nombre);
-                    parameters.Add("@ruta", destinoPost.Ruta);
-                    parameters.Add("@ip", destinoPost.Ip);
-                    parameters.Add("@puerto", destinoPost.Puerto);
-                    */
-                    //int id = conn.ExecuteScalar<int>(insert, parameters);                    // ejecutarlo
                     
                     int id = conn.ExecuteScalar<int>(insert, new {
                         nombre = destinoPost.Nombre,
@@ -105,37 +96,11 @@ namespace PlanNacionalNumeracion.Services
             }
         }
 
-        /*
-        public Ambiente GetAmbiente(int id)
-        {
-            try
-            {
-                string query = @"
-                    SELECT id, tipo_ambiente as tipoAmbiente, status 
-                    FROM ambiente_servidor WITH(NOLOCK)
-                    WHERE id = @id
-                ";
-                using (IDbConnection conn = new SqlConnection(Global.ConnectionString))
-                {
-                    if (conn.State == ConnectionState.Closed)
-                    {
-                        conn.Open();
-                    }
-                    var ambiente = conn.QueryFirstOrDefault<Ambiente>(query, new { id = id });
-                    return ambiente;
-                }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        public Response UpdateAmbiente(int id, Ambiente ambiente)
+        public Response ActualizarDestino(int id, DestinoPost destinoPost)
         {
             string update = @"
-                UPDATE ambiente_servidor  
-                SET tipo_ambiente = @tipoAmbiente, status = @status 
+                UPDATE PNN_destino  
+                SET nombre = @nombre, ruta = @ruta, ip = @ip, puerto = @puerto
                 WHERE id = @id
             ";
             try
@@ -146,8 +111,8 @@ namespace PlanNacionalNumeracion.Services
                     {
                         conn.Open();
                     }
-                    var updated = conn.Execute(update, new { tipoAmbiente = ambiente.tipoAmbiente, status = ambiente.status, id });
-                    return new Response { Status = 0, Message = "Actualizado correctamente" };
+                    var updated = conn.Execute(update, new { nombre = destinoPost.Nombre, ruta = destinoPost.Ruta, ip = destinoPost.Ip, puerto = destinoPost.Puerto });
+                    return new Response { Status = 0, Message = $"{updated} Registros Actualizados correctamente" };
                 }
             }
             catch (Exception ex)
@@ -156,16 +121,22 @@ namespace PlanNacionalNumeracion.Services
             }
         }
 
-        public Response DeleteAmbiente(int id)
+        public Response EliminarDestino(int id)
         {
-            string update = @"UPDATE ambiente_servidor SET STATUS = 0 WHERE id = @id";
+            string update = @"
+                DELETE FROM PNN_carga_destion where id_PNN_destino = @id;
+                DELETE FROM PNN_credenciales_validacion_carga where id_PNN_destino = @id;
+                DELETE FROM PNN_validacion_carga where id_PNN_destino = @id;
+                DELETE FROM PNN_usuario_destino where id_PNN_destino = @id;
+                DELETE FROM PNN_destino where id = @id;
+            ";
             try
             {
                 using (IDbConnection conn = new SqlConnection(Global.ConnectionString))
                 {
                     if (conn.State == ConnectionState.Closed) conn.Open();
-                    var updated = conn.Execute(update, new { id });
-                    return new Response { Status = 0, Message = Util.Util.Eliminado("AmbienteServidor", id) };
+                    var deleted = conn.Execute(update, new { id });
+                    return new Response { Status = 0, Message = $"{deleted} Registros eliminados"};
                 }
             }
             catch (Exception ex)
@@ -173,7 +144,6 @@ namespace PlanNacionalNumeracion.Services
                 return new Response { Status = 1, Message = ex.Message };
             }
         }
-        */
     }
 }
 

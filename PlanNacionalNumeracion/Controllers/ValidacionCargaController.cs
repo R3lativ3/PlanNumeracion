@@ -5,11 +5,11 @@ using System.Collections.Generic;
 using System;
 using PlanNacionalNumeracion.Models.UsuarioDestino;
 using PlanNacionalNumeracion.Models.Usuario;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
 
 namespace PlanNacionalNumeracion.Controllers
 {
-
-
     [Route("api/validacionCarga")]
     [ApiController]
     public class ValidacionCargaController: Controller
@@ -19,7 +19,8 @@ namespace PlanNacionalNumeracion.Controllers
         {
         }
 
-        [HttpGet()]
+        [HttpGet]
+        [Authorize(Roles = "General")]
         public ActionResult<List<ValidacionCarga>> ObtenerTodosValidacionCarga()
         {
             try
@@ -35,6 +36,7 @@ namespace PlanNacionalNumeracion.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "General")]
         public ActionResult<Response> AgregarValidacionCarga(ValidacionCargaPost validacionCargaPost)
         {
             try
@@ -50,30 +52,53 @@ namespace PlanNacionalNumeracion.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "General")]
         public ActionResult<ValidacionCarga> GetValidacionCargaById(int id)
         {
-            ValidacionCargaService validacionCargaService = new ValidacionCargaService();
-            var respuesta = validacionCargaService.GetValidacionCarga(id);
-            if (respuesta == null)
-                return NotFound("Validación Carga Inexistente");
-            return Ok(respuesta);
+            try
+            {
+                ValidacionCargaService validacionCargaService = new ValidacionCargaService();
+                var respuesta = validacionCargaService.GetValidacionCarga(id);
+                if (respuesta == null)
+                    return NotFound("Validaciï¿½n Carga Inexistente");
+                return Ok(respuesta);
+            }
+            catch(Exception ex)
+            {
+                return Problem(ex.Message, null, 500);
+            }
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "General")]
         public ActionResult<Response> PutValidacionCarga(int id, [FromBody] ValidacionCargaPost validacionCargaPost)
         {
-            ValidacionCargaService validacionCargaService = new ValidacionCargaService();
-            var respuesta = validacionCargaService.UpdateValidacionCarga(id, validacionCargaPost);
-            return Ok(respuesta);
-
+            try
+            {
+                ValidacionCargaService validacionCargaService = new ValidacionCargaService();
+                var respuesta = validacionCargaService.UpdateValidacionCarga(id, validacionCargaPost);
+                return Ok(respuesta);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message, null, 500);
+            }
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "General")]
         public ActionResult<Response> DeleteValidacionCarga(int id)
         {
-            ValidacionCargaService validacionCargaService = new ValidacionCargaService();
-            var respuesta = validacionCargaService.DeleteValidacionCarga(id);
-            return Ok(respuesta);
+            try
+            {
+                ValidacionCargaService validacionCargaService = new ValidacionCargaService();
+                var respuesta = validacionCargaService.DeleteValidacionCarga(id);
+                return Ok(respuesta);
+            }
+            catch(Exception ex)
+            {
+                return Problem(ex.Message, null, 500);
+            }
         }
     }
     

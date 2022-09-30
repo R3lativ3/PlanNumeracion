@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PlanNacionalNumeracion.Models;
 using PlanNacionalNumeracion.Models.Destino;
 using PlanNacionalNumeracion.Models.ModelsYat;
 using PlanNacionalNumeracion.Services;
 using System;
 using System.Collections.Generic;
+using System.Data;
 
 namespace PlanNacionalNumeracion.Controllers
 {
@@ -13,6 +15,7 @@ namespace PlanNacionalNumeracion.Controllers
     public class CredencialesValidacionCargaController: Controller
     {
         [HttpGet]
+        [Authorize(Roles = "General")]
         public ActionResult<List<CredencialesValidacionCarga>> ObtenerTodosCredencialesValidacionCarga ()
         {
             try
@@ -24,12 +27,11 @@ namespace PlanNacionalNumeracion.Controllers
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
-
             }
-
-
         }
+
         [HttpPost]
+        [Authorize(Roles = "General")]
         public ActionResult<Response> AddFileToTranscription(CredencialesValidacionCargaPost credencialesValidacionCargaPost)
         {
             try
@@ -47,23 +49,6 @@ namespace PlanNacionalNumeracion.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        /*
-        [HttpPost]
-        public ActionResult<string> PostCredencialesValidacionCarga(string nombre)
-        {
-            return "prueba " + nombre;
-        }
-        */
-        [HttpPut]
-        public ActionResult<string> PutCredencialesValidacionCarga(CredencialesValidacionCargaPost nombre)
-        {
-            return "prueba " + nombre;
-        }
 
-        [HttpDelete]
-        public ActionResult<string> DeleteCredencialesValidacionCarga(string nombre)
-        {
-            return "prueba " + nombre;
-        }
     }
 }

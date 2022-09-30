@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PlanNacionalNumeracion.Models;
 using PlanNacionalNumeracion.Models.Destino;
@@ -14,6 +15,7 @@ namespace PlanNacionalNumeracion.Controllers
     public class CargaDestinoController: Controller
     {
         [HttpGet]
+        [Authorize(Roles = "General")]
         public ActionResult<List<CargaDestino>> ObtenerTodosCargaDestino()
         {
             try
@@ -35,12 +37,13 @@ namespace PlanNacionalNumeracion.Controllers
         /// <param name="archivo">Archivo que se va a depositar en los destinos</param>
         /// <returns>confirmacion si se realizo o no, ademas envia un email con el resultado</returns>
         [HttpPost("send-file")]
+        [Authorize(Roles = "General")]
         public ActionResult<List<Response>> AddFileToTranscription([FromForm] UploadCargaDestino upload)
         {
             try
             {
                 var cargaService = new CargaDestinoService();
-                var response = cargaService.CargarArchivoDestino(upload.destinos, upload.archivo);
+                var response = cargaService.CargarArchivoDestino(upload.destinos, upload.archivo,"jz073s");
 
                 return Ok(response);
             }
@@ -49,45 +52,6 @@ namespace PlanNacionalNumeracion.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
-        [HttpPost]
-        public ActionResult<Response> AddFileToTranscription(CargaDestinoPost cargaDestinoPost)
-        {
-            try
-            {
-                CargaDestinoService cargaDestinoService = new CargaDestinoService();
-                Response response = cargaDestinoService.AgregarCargaDestino(cargaDestinoPost);
-                if (response.Status == 0)
-                {
-                    return Ok(response);
-                }
-                return BadRequest(response);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        /*
-        [HttpPost]
-        public ActionResult<string> PostCargaDestino(string nombre)
-        {
-            return "prueba " + nombre;
-        }*/
-
-        [HttpPut]
-        public ActionResult<string> PutCargaDestino(CargaDestinoPost nombre)
-        {
-            return "prueba " + nombre;
-        }
-
-        [HttpDelete]
-        public ActionResult<string> DeleteCargaDestino(string nombre)
-        {
-            return "prueba " + nombre;
-        }
-
 
     }
 }

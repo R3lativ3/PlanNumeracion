@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using Dapper;
+using EncriptadorMA;
 using PlanNacionalNumeracion.Common;
 using PlanNacionalNumeracion.Models;
 using PlanNacionalNumeracion.Models.Usuario;
@@ -13,17 +14,16 @@ public class UsuarioDestinoService
     public List<UsuarioDestino> ObtenerTodosUsuarioDestino()
     {
         string consulta = @"
-                            Select id, usuario, psw, id_PNN_destino as IdPNNDestino
-                            From PNN_usuario_destino WITH(NOLOCK)";
+            Select id, usuario, psw, id_PNN_destino as IdPNNDestino
+            From PNN_usuario_destino WITH(NOLOCK)
+        ";
         using (IDbConnection conn = new SqlConnection(Global.ConnectionString))
         {
             if (conn.State == ConnectionState.Closed)
             {
                 conn.Open();
             }
-            List<UsuarioDestino> list = new List<UsuarioDestino>(); //opcion #1
-            //var list = new List<UsuarioDestino>();             // opcion #2
-            list = conn.Query<UsuarioDestino>(consulta).AsList();
+            var list = conn.Query<UsuarioDestino>(consulta).AsList();
             return list;
         }
     }
@@ -46,22 +46,22 @@ public class UsuarioDestinoService
         }
     }
 
-    public Response AgregarUsuarioDestino (UsuarioDestinoPost usuarioDestinoPost)
+    public Response AgregarUsuarioDestino(UsuarioDestinoPost usuarioDestinoPost)
     {
         try
         {
             string query = @"
-                            INSERT INTO PNN_usuario_destino (usuario, psw, id_PNN_destino)
-                            VALUES (@usuario, @psw, @id_PNN_destino)";
+                INSERT INTO PNN_usuario_destino (usuario, psw, id_PNN_destino)
+                VALUES (@usuario, @psw, @id_PNN_destino)
+            ";
             using (IDbConnection conn = new SqlConnection(Global.ConnectionString))
             {
                 if (conn.State == ConnectionState.Closed)
-                {
                     conn.Open();
-                }
+                var enc = new Encrypt();
                 DynamicParameters parameters = new DynamicParameters();
                 parameters.Add("@usuario", usuarioDestinoPost.Usuario);
-                parameters.Add("@psw", usuarioDestinoPost.Psw);
+                parameters.Add("@psw", enc.Encriptar(usuarioDestinoPost.Psw));
                 parameters.Add("@id_PNN_destino", usuarioDestinoPost.IdPNNDestino);
                 conn.Execute(query, parameters);
                 return new Response() { Status = 0, Message = "Se ha creado el registro exitosamente" };
@@ -71,8 +71,6 @@ public class UsuarioDestinoService
         {
             return new Response() { Status = 1, Message = ex.Message };
         }
-
-
     }
 
     public UsuarioDestino GetUsuarioDestino(int id)
@@ -80,16 +78,17 @@ public class UsuarioDestinoService
         try
         {
             string query = @"
-            SELECT id, usuario, psw, id_PNN_destino as IdPNNDestino
-            FROM PNN_usuario_destino WITH(NOLOCK)
-            WHERE id = @id ";
+                SELECT id, usuario, psw, id_PNN_destino as IdPNNDestino
+                FROM PNN_usuario_destino WITH(NOLOCK)
+                WHERE id = @id
+            ";
             using (IDbConnection conn = new SqlConnection(Global.ConnectionString))
             {
                 if (conn.State == ConnectionState.Closed)
                 {
                     conn.Open();
                 }
-                var usuario = conn.QueryFirstOrDefault<UsuarioDestino>(query, new { id = id });
+                var usuario = conn.QueryFirstOrDefault<UsuarioDestino>(query, new { id });
                 return usuario;
             }
         }
@@ -114,10 +113,10 @@ public class UsuarioDestinoService
                 {
                     conn.Open();
                 }
-                var updated = conn.Execute(update, new
-                {
+                var enc = new Encrypt();
+                conn.Execute(update, new{
                     usuario = usuarioDestinoPost.Usuario,
-                    psw = usuarioDestinoPost.Psw,
+                    psw = enc.Encriptar(usuarioDestinoPost.Psw),
                     id_PNN_destino = usuarioDestinoPost.IdPNNDestino,
                     id
                 });
@@ -132,15 +131,15 @@ public class UsuarioDestinoService
 
     public Response DeleteUsuarioDestino(int id)
     {
-
         try
         {
             string query = @"DELETE FROM PNN_usuario_destino WHERE id = @id";
             using (IDbConnection conn = new SqlConnection(Global.ConnectionString))
             {
-                if (conn.State == ConnectionState.Closed) conn.Open();
+                if (conn.State == ConnectionState.Closed)
+                    conn.Open();
                 var delete = conn.Execute(query, new { id });
-                return new Response { Status = 0, Message = "Usuario Destino Eliminado Correctamente" };
+                return new Response { Status = 0, Message = "Usuario Destino Eliminado Correctamente, filas afectadas: "+delete };
             }
         }
         catch (Exception ex)

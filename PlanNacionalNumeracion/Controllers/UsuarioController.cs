@@ -5,6 +5,8 @@ using PlanNacionalNumeracion.Models.Usuario;
 using PlanNacionalNumeracion.Models;
 using System.Threading.Tasks;
 using PlanNacionalNumeracion.Models.ModelsYat;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
 
 namespace PlanNacionalNumeracion.Controllers
 {
@@ -16,7 +18,8 @@ namespace PlanNacionalNumeracion.Controllers
         public UsuarioController() {
         }
 
-        [HttpGet()]
+        [HttpGet]
+        [Authorize(Roles = "General")]
         public ActionResult<List<Usuario>> ObtenerTodosUsuario()
         {
             try
@@ -31,22 +34,8 @@ namespace PlanNacionalNumeracion.Controllers
             }
         }
 
-        [HttpPost()]
-        public ActionResult<Response> PostPrueba(UsuarioPost usuarioPost)
-        {
-            try
-            {
-                UsuarioService usuarioService = new UsuarioService();
-                var respuesta = usuarioService.AgregarUsuario(usuarioPost);
-                return respuesta;
-            }
-            catch (Exception ex)
-            {
-                return new Response() { Status = 1, Message = ex.Message };
-            }
-        }
-
         [HttpGet("{id}")]
+        [Authorize(Roles = "General")]
         public ActionResult<Usuario> GetUsuario(int id)
         {
             UsuarioService usuario = new UsuarioService();
@@ -56,21 +45,52 @@ namespace PlanNacionalNumeracion.Controllers
             return Ok(respuesta);
         }
 
+        [HttpPost]
+        [Authorize(Roles = "General")]
+        public ActionResult<Response> CrearUsuario(UsuarioPost usuarioPost)
+        {
+            try
+            {
+                UsuarioService usuarioService = new UsuarioService();
+                var respuesta = usuarioService.AgregarUsuario(usuarioPost);
+                return Ok(respuesta);
+            }
+            catch (Exception ex)
+            {
+                return new Response() { Status = 1, Message = ex.Message };
+            }
+        }
+
         [HttpPut("{id}")]
+        [Authorize(Roles = "General")]
         public ActionResult<Response> PutUsuario(int id, [FromBody] UsuarioPost usuarioPost)
         {
-            UsuarioService usuario = new UsuarioService();
-            var respuesta = usuario.UpdateUsuario(id, usuarioPost);
-            return Ok(respuesta);
-
+            try
+            {
+                UsuarioService usuario = new UsuarioService();
+                var respuesta = usuario.UpdateUsuario(id, usuarioPost);
+                return Ok(respuesta);
+            }
+            catch(Exception ex)
+            {
+                return Problem(ex.Message, null, 500);
+            }
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "General")]
         public ActionResult<Response> DeleteUsuario(int id)
         {
-            UsuarioService usuarioService = new UsuarioService();
-            var respuesta = usuarioService.DeleteUsuario(id);
-            return Ok(respuesta);
+            try
+            {
+                UsuarioService usuarioService = new UsuarioService();
+                var respuesta = usuarioService.DeleteUsuario(id);
+                return Ok(respuesta);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message, null, 500);
+            }
         }
     }
 }
