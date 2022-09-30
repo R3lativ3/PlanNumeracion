@@ -4,6 +4,7 @@ using PlanNacionalNumeracion.Models.ValidacionCarga;
 using System.Collections.Generic;
 using System;
 using PlanNacionalNumeracion.Models.UsuarioDestino;
+using PlanNacionalNumeracion.Models.Usuario;
 
 namespace PlanNacionalNumeracion.Controllers
 {
@@ -55,6 +56,23 @@ namespace PlanNacionalNumeracion.Controllers
             var respuesta = validacionCargaService.GetValidacionCarga(id);
             if (respuesta == null)
                 return NotFound("Validación Carga Inexistente");
+            return Ok(respuesta);
+        }
+
+        [HttpPut("{id}")]
+        public ActionResult<Response> PutValidacionCarga(int id, [FromBody] ValidacionCargaPost validacionCargaPost)
+        {
+            ValidacionCargaService validacionCargaService = new ValidacionCargaService();
+            var respuesta = validacionCargaService.UpdateValidacionCarga(id, validacionCargaPost);
+            return Ok(respuesta);
+
+        }
+
+        [HttpDelete("{id}")]
+        public ActionResult<Response> DeleteValidacionCarga(int id)
+        {
+            ValidacionCargaService validacionCargaService = new ValidacionCargaService();
+            var respuesta = validacionCargaService.DeleteValidacionCarga(id);
             return Ok(respuesta);
         }
     }

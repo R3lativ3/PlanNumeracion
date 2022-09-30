@@ -7,6 +7,7 @@ using Dapper;
 using System;
 using PlanNacionalNumeracion.Models;
 using EncriptadorMA;
+using Microsoft.VisualBasic;
 
 public class UsuarioService
 {
@@ -101,7 +102,7 @@ public class UsuarioService
     public Response UpdateUsuario(int id, UsuarioPost usuarioPost)
     {
         string update = @"
-                UPDATE nombres, apellido_paterno as ApellidoPaterno, apellido_materno as ApellidoMaterno, attuid, psw 
+                UPDATE PNN_usuario 
                 SET nombres = @nombres, apellido_paterno = @apellido_paterno, apellido_materno = @apellido_materno, attuid = @attuid, psw = @psw
                 WHERE id = @id
             ";
@@ -113,9 +114,28 @@ public class UsuarioService
                 {
                     conn.Open();
                 }
-                var updated = conn.Execute(update, new {  nombres= usuarioPost.Nombres, apellido_paterno = usuarioPost.ApellidoMaterno, 
+                var updated = conn.Execute(update, new {  nombres= usuarioPost.Nombres, apellido_paterno = usuarioPost.ApellidoPaterno, 
                                                           apellido_materno = usuarioPost.ApellidoMaterno, attuid = usuarioPost.Attuid, psw = usuarioPost.Psw, id });
                 return new Response { Status = 0, Message = "Actualizado correctamente" };
+            }
+        }
+        catch (Exception ex)
+        {
+            return new Response { Status = 1, Message = ex.Message };
+        }
+    }
+
+    public Response DeleteUsuario(int id)
+    {
+        
+        try
+        {
+            string query = @"DELETE FROM PNN_usuario WHERE id = @id";
+            using (IDbConnection conn = new SqlConnection(Global.ConnectionString))
+            {
+                if (conn.State == ConnectionState.Closed) conn.Open();
+                var delete = conn.Execute(query, new { id });
+                return new Response { Status = 0, Message = "Usuario Eliminado Correctamente"};
             }
         }
         catch (Exception ex)

@@ -98,4 +98,54 @@ public class UsuarioDestinoService
             throw ex;
         }
     }
+
+    public Response UpdateUsuarioDestino(int id, UsuarioDestinoPost usuarioDestinoPost)
+    {
+        string update = @"
+                UPDATE PNN_usuario_destino 
+                SET usuario = @usuario, psw = @psw, id_PNN_destino = @id_PNN_destino
+                WHERE id = @id
+            ";
+        try
+        {
+            using (IDbConnection conn = new SqlConnection(Global.ConnectionString))
+            {
+                if (conn.State == ConnectionState.Closed)
+                {
+                    conn.Open();
+                }
+                var updated = conn.Execute(update, new
+                {
+                    usuario = usuarioDestinoPost.Usuario,
+                    psw = usuarioDestinoPost.Psw,
+                    id_PNN_destino = usuarioDestinoPost.IdPNNDestino,
+                    id
+                });
+                return new Response { Status = 0, Message = "Actualizado correctamente" };
+            }
+        }
+        catch (Exception ex)
+        {
+            return new Response { Status = 1, Message = ex.Message };
+        }
+    }
+
+    public Response DeleteUsuarioDestino(int id)
+    {
+
+        try
+        {
+            string query = @"DELETE FROM PNN_usuario_destino WHERE id = @id";
+            using (IDbConnection conn = new SqlConnection(Global.ConnectionString))
+            {
+                if (conn.State == ConnectionState.Closed) conn.Open();
+                var delete = conn.Execute(query, new { id });
+                return new Response { Status = 0, Message = "Usuario Destino Eliminado Correctamente" };
+            }
+        }
+        catch (Exception ex)
+        {
+            return new Response { Status = 1, Message = ex.Message };
+        }
+    }
 }

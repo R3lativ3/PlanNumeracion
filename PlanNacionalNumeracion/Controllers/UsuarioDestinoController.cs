@@ -55,5 +55,22 @@ namespace PlanNacionalNumeracion.Controllers
                 return NotFound("Usuario Destino Inexistente");
             return Ok(respuesta);
         }
+
+        [HttpPut("{id}")]
+        public ActionResult<Response> PutUsuarioDestino(int id, [FromBody] UsuarioDestinoPost usuarioDestinoPost)
+        {
+            UsuarioDestinoService usuarioDestinoService = new UsuarioDestinoService();
+            var respuesta = usuarioDestinoService.UpdateUsuarioDestino(id, usuarioDestinoPost);
+            return Ok(respuesta);
+
+        }
+
+        [HttpDelete("{id}")]
+        public ActionResult<Response> DeleteUsuarioDestino(int id)
+        {
+            UsuarioDestinoService usuarioDestinoService = new UsuarioDestinoService();
+            var respuesta = usuarioDestinoService.DeleteUsuarioDestino(id);
+            return Ok(respuesta);
+        }
     }
 }

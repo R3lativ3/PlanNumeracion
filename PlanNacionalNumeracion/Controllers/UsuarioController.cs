@@ -64,6 +64,14 @@ namespace PlanNacionalNumeracion.Controllers
             return Ok(respuesta);
 
         }
+
+        [HttpDelete("{id}")]
+        public ActionResult<Response> DeleteUsuario(int id)
+        {
+            UsuarioService usuarioService = new UsuarioService();
+            var respuesta = usuarioService.DeleteUsuario(id);
+            return Ok(respuesta);
+        }
     }
 }
     
