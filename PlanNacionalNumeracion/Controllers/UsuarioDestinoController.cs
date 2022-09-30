@@ -68,6 +68,24 @@ namespace PlanNacionalNumeracion.Controllers
             }
         }
 
+        [HttpGet("destino/{id}")]
+        [Authorize(Roles = "General")]
+        public ActionResult<UsuarioDestino> GetUsuarioByIdDestino(int id)
+        {
+            try
+            {
+                UsuarioDestinoService usuarioDestino = new UsuarioDestinoService();
+                var respuesta = usuarioDestino.ObtenerUsuarioDestinoPorIdDestino(id);
+                if (respuesta == null)
+                    return NotFound("Usuario Destino Inexistente");
+                return Ok(respuesta);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message, null, 500);
+            }
+        }
+
         [HttpPut("{id}")]
         [Authorize(Roles = "General")]
         public ActionResult<Response> PutUsuarioDestino(int id, [FromBody] UsuarioDestinoPost usuarioDestinoPost)
