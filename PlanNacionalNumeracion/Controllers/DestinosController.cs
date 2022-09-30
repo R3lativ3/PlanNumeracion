@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PlanNacionalNumeracion.Models;
 using PlanNacionalNumeracion.Models.Destino;
+using PlanNacionalNumeracion.Models.ModelsYat;
 using PlanNacionalNumeracion.Services;
 
 namespace PlanNacionalNumeracion.Controllers
@@ -32,18 +33,23 @@ namespace PlanNacionalNumeracion.Controllers
             }
         }
 
-        [HttpPost]
-        public ActionResult<Response> AddFileToTranscription([FromForm]int id, IFormFile file)
+        /// <summary>
+        /// Endpoint para recibir los archivos que se van a enviar a los servidores
+        /// </summary>
+        /// <param name="destinos">Arreglo que contiene todos los id's de destino (para en base a ese id ir a buscar credenciales, etc)</param>
+        /// <param name="archivo">Archivo que se va a depositar en los destinos</param>
+        /// <returns>confirmacion si se realizo o no, ademas envia un email con el resultado</returns>
+        [HttpPost("send-file")]
+        public ActionResult<List<Response>> AddFileToTranscription([FromForm] UploadCargaDestino upload)
         {
             try
             {
-                var cargaService = new CargaService();
-                var response = cargaService.CargarArchivoDestino(id, file);
-                if(response.Status == 0)
-                {
-                    return Ok(response);
-                }
-                return BadRequest(response);
+                var cargaService = new CargaDestinoService();
+                var response = cargaService.CargarArchivoDestino(upload.destinos, upload.archivo);
+
+
+
+                return Ok(response);
             }
             catch (Exception ex)
             {

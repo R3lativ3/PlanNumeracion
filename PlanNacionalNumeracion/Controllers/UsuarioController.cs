@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using PlanNacionalNumeracion.Models.Usuario;
 using PlanNacionalNumeracion.Models;
 using System.Threading.Tasks;
+using PlanNacionalNumeracion.Models.ModelsYat;
 
 namespace PlanNacionalNumeracion.Controllers
 {
@@ -12,7 +13,7 @@ namespace PlanNacionalNumeracion.Controllers
 
     public class UsuarioController : Controller
     {
-        public UsuarioController(){
+        public UsuarioController() {
         }
 
         [HttpGet()]
@@ -53,6 +54,15 @@ namespace PlanNacionalNumeracion.Controllers
             if (respuesta == null)
                 return NotFound("Usuario Inexistente");
             return Ok(respuesta);
+        }
+
+        [HttpPut("{id}")]
+        public ActionResult<Response> PutUsuario(int id, [FromBody] UsuarioPost usuarioPost)
+        {
+            UsuarioService usuario = new UsuarioService();
+            var respuesta = usuario.UpdateUsuario(id, usuarioPost);
+            return Ok(respuesta);
+
         }
     }
 }

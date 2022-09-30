@@ -97,4 +97,30 @@ public class UsuarioService
             throw ex;
         }
     }
+
+    public Response UpdateUsuario(int id, UsuarioPost usuarioPost)
+    {
+        string update = @"
+                UPDATE nombres, apellido_paterno as ApellidoPaterno, apellido_materno as ApellidoMaterno, attuid, psw 
+                SET nombres = @nombres, apellido_paterno = @apellido_paterno, apellido_materno = @apellido_materno, attuid = @attuid, psw = @psw
+                WHERE id = @id
+            ";
+        try
+        {
+            using (IDbConnection conn = new SqlConnection(Global.ConnectionString))
+            {
+                if (conn.State == ConnectionState.Closed)
+                {
+                    conn.Open();
+                }
+                var updated = conn.Execute(update, new {  nombres= usuarioPost.Nombres, apellido_paterno = usuarioPost.ApellidoMaterno, 
+                                                          apellido_materno = usuarioPost.ApellidoMaterno, attuid = usuarioPost.Attuid, psw = usuarioPost.Psw, id });
+                return new Response { Status = 0, Message = "Actualizado correctamente" };
+            }
+        }
+        catch (Exception ex)
+        {
+            return new Response { Status = 1, Message = ex.Message };
+        }
+    }
 }
