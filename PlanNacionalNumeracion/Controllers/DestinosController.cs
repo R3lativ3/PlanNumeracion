@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using PlanNacionalNumeracion.Models;
 using PlanNacionalNumeracion.Models.Destino;
 using PlanNacionalNumeracion.Models.ModelsYat;
+using PlanNacionalNumeracion.Models.UsuarioDestino;
 using PlanNacionalNumeracion.Services;
 
 namespace PlanNacionalNumeracion.Controllers
@@ -91,6 +92,24 @@ namespace PlanNacionalNumeracion.Controllers
                     return Ok(response);
                 }
                 return BadRequest(response);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message, null, 500);
+            }
+        }
+
+        [HttpGet("{id}")]
+        [Authorize(Roles = "General")]
+        public ActionResult<UsuarioDestino> GetDestinoById(int id)
+        {
+            try
+            {
+                DestinosService destinosService = new DestinosService();
+                var respuesta = destinosService.GetDestino(id);
+                if (respuesta == null)
+                    return NotFound("Destino Inexistente");
+                return Ok(respuesta);
             }
             catch (Exception ex)
             {

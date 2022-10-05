@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using PlanNacionalNumeracion.Models.Destino;
+using PlanNacionalNumeracion.Models.UsuarioDestino;
 
 namespace PlanNacionalNumeracion.Services
 {
@@ -111,7 +112,7 @@ namespace PlanNacionalNumeracion.Services
                     {
                         conn.Open();
                     }
-                    var updated = conn.Execute(update, new { nombre = destinoPost.Nombre, ruta = destinoPost.Ruta, ip = destinoPost.Ip, puerto = destinoPost.Puerto });
+                    var updated = conn.Execute(update, new { nombre = destinoPost.Nombre, ruta = destinoPost.Ruta, ip = destinoPost.Ip, puerto = destinoPost.Puerto, id});
                     return new Response { Status = 0, Message = $"{updated} Registros Actualizados correctamente" };
                 }
             }
@@ -142,6 +143,31 @@ namespace PlanNacionalNumeracion.Services
             catch (Exception ex)
             {
                 return new Response { Status = 1, Message = ex.Message };
+            }
+        }
+
+        public Destino GetDestino(int id)
+        {
+            try
+            {
+                string query = @"
+                SELECT id, nombre, ruta, ip, puerto
+                FROM PNN_destino WITH(NOLOCK)
+                WHERE id = @id
+            ";
+                using (IDbConnection conn = new SqlConnection(Global.ConnectionString))
+                {
+                    if (conn.State == ConnectionState.Closed)
+                    {
+                        conn.Open();
+                    }
+                    var destino = conn.QueryFirstOrDefault<Destino>(query, new { id });
+                    return destino;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
             }
         }
     }
