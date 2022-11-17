@@ -15,7 +15,7 @@ namespace PlanNacionalNumeracion.Controllers
     public class CargaDestinoController: Controller
     {
         [HttpGet]
-        //[Authorize(Roles = "General")]
+        [Authorize(Roles = "General")]
         public ActionResult<List<CargaDestino>> ObtenerTodosCargaDestino()
         {
             try
@@ -37,7 +37,7 @@ namespace PlanNacionalNumeracion.Controllers
         /// <param name="archivo">Archivo que se va a depositar en los destinos</param>
         /// <returns>confirmacion si se realizo o no, ademas envia un email con el resultado</returns>
         [HttpPost("send-file")]
-        //[Authorize(Roles = "General")]
+        [Authorize(Roles = "General")]
         public ActionResult<List<Response>> AddFileToTranscription([FromForm] UploadCargaDestino upload)
         {
             try
