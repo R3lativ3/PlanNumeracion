@@ -21,7 +21,7 @@ namespace PlanNacionalNumeracion.Services
             try
             {
                 string query = @"
-                    SELECT id, nombre, ruta, ip, puerto
+                    SELECT id, hostname, ruta, ip, puerto, fecha_validar_bd, status, protocolo, crom
                     FROM PNN_destino WITH(NOLOCK)
                 ";
                 using (IDbConnection conn = new SqlConnection(Global.ConnectionString))
@@ -45,7 +45,7 @@ namespace PlanNacionalNumeracion.Services
             try
             {
                 string query = @"
-                    SELECT id, nombre, ruta, ip, puerto
+                    SELECT id, hostname, ruta, ip, puerto, fecha_valida_bd, status, protocolo, crom
                     FROM PNN_destino WITH(NOLOCK)
                     WHERE id = @id
                 ";
@@ -69,8 +69,8 @@ namespace PlanNacionalNumeracion.Services
             try
             {
                 string insert = @"
-                    INSERT INTO PNN_destino (nombre, ruta, ip, puerto)  OUTPUT INSERTED.*
-                    VALUES (@nombre, @ruta, @ip, @puerto);
+                    INSERT INTO PNN_destino (hostname, ruta, ip, puerto, fecha_validar_bd, status, protocolo, crom)  OUTPUT INSERTED.*
+                    VALUES (@hostname, @ruta, @ip, @puerto, @fecha_validar_bd, @status, @protocolo, @crom);
                 ";
                 using (IDbConnection conn = new SqlConnection(Global.ConnectionString))
                 {
@@ -80,10 +80,14 @@ namespace PlanNacionalNumeracion.Services
                     }
                     
                     int id = conn.ExecuteScalar<int>(insert, new {
-                        nombre = destinoPost.Nombre,
+                        nombre = destinoPost.Hostname,
                         ruta = destinoPost.Ruta,
                         ip = destinoPost.Ip,
-                        puerto = destinoPost.Puerto
+                        puerto = destinoPost.Puerto,
+                        fecha_valida_bd = destinoPost.FechaValidarBd,
+                        status = destinoPost.Status,
+                        protocolo = destinoPost.Protocolo,
+                        cron = destinoPost.Crom
                     });
                     Response resp = new Response();
                     resp.Status = 0;
@@ -101,7 +105,7 @@ namespace PlanNacionalNumeracion.Services
         {
             string update = @"
                 UPDATE PNN_destino  
-                SET nombre = @nombre, ruta = @ruta, ip = @ip, puerto = @puerto
+                SET nombre = @hostname, ruta = @ruta, ip = @ip, puerto = @puerto, fecha_validar_bd = @fecha_validar_bd, status = @status, protocolo = @protocolo, crom = @crom 
                 WHERE id = @id
             ";
             try
@@ -112,7 +116,7 @@ namespace PlanNacionalNumeracion.Services
                     {
                         conn.Open();
                     }
-                    var updated = conn.Execute(update, new { nombre = destinoPost.Nombre, ruta = destinoPost.Ruta, ip = destinoPost.Ip, puerto = destinoPost.Puerto, id});
+                    var updated = conn.Execute(update, new { nombre = destinoPost.Hostname, ruta = destinoPost.Ruta, ip = destinoPost.Ip, puerto = destinoPost.Puerto, fecha_validar_bd = destinoPost.FechaValidarBd, status = destinoPost.Status, protocolo = destinoPost.Protocolo, crom = destinoPost.Crom, id});
                     return new Response { Status = 0, Message = $"{updated} Registros Actualizados correctamente" };
                 }
             }
@@ -151,7 +155,7 @@ namespace PlanNacionalNumeracion.Services
             try
             {
                 string query = @"
-                SELECT id, nombre, ruta, ip, puerto
+                SELECT id, hostname, ruta, ip, puerto, fecha_valida_bd, status, protocolo, crom
                 FROM PNN_destino WITH(NOLOCK)
                 WHERE id = @id
             ";

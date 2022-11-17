@@ -12,6 +12,9 @@ namespace PlanNacionalNumeracion.Models.Usuario
         public string ApellidoMaterno { get; set; }
         [Required]
         public string Attuid { get; set; }
+        public DateTime LastLog { get; set; }
+        public string BlockByInact { get; set; }
+        public string Status { get; set; }
         [Required]
         public string Psw { get; set; }
     }

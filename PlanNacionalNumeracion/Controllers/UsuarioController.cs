@@ -19,7 +19,7 @@ namespace PlanNacionalNumeracion.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "General")]
+        //[Authorize(Roles = "General")]
         public ActionResult<List<Usuario>> ObtenerTodosUsuario()
         {
             try
@@ -46,7 +46,7 @@ namespace PlanNacionalNumeracion.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "General")]
+        
         public ActionResult<Response> CrearUsuario(UsuarioPost usuarioPost)
         {
             try

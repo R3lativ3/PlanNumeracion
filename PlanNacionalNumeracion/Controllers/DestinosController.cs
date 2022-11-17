@@ -22,7 +22,7 @@ namespace PlanNacionalNumeracion.Controllers
 		}
 
 		[HttpGet]
-        [Authorize(Roles = "General")]
+       // [Authorize(Roles = "General")]
         public ActionResult<List<Destino>> ObtenerTodosDestinos()
         {
             try

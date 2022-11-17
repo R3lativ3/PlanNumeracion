@@ -67,7 +67,7 @@ namespace PlanNacionalNumeracion
             // BASE DE DATOS
             services.AddSingleton<IConfiguration>(Configuration);
 
-            Global.ConnectionString = Configuration.GetConnectionString("localDb");
+            Global.ConnectionString = Configuration.GetConnectionString("DevelopmentATT2");
 
 
             // INYECCION DEPENDENCIAS

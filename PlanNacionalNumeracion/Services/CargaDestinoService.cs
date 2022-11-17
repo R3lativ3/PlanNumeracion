@@ -24,7 +24,7 @@ namespace PlanNacionalNumeracion.Services
             try
             {
                 string consulta = @"
-                    SELECT a.id, a.fecha_carga fechaCarga, a.nombre_archivo nombreArchivo, b.nombre nombreDestino, b.ruta pathDestino, b.ip ipDestino, c.nombres nombreUsuario, c.apellido_paterno apellidoUsuario, c.attuid
+                    SELECT a.id, a.name,  a.peso_archivo PesoArchivo,  a.numero_registros NumeroRegistro, a.fecha_carga fechaCarga, a.formato_archivo FormatoArchivo, b.hostname hostnameDestino, b.ruta pathDestino, b.ip ipDestino, c.nombres nombreUsuario, c.apellido_paterno apellidoUsuario, c.attuid
                     FROM PNN_carga_destino a WITH(NOLOCK)
                     join PNN_destino b
                     	on b.id = a.id_PNN_destino
@@ -53,8 +53,8 @@ namespace PlanNacionalNumeracion.Services
             try
             {
                 string insert = @"
-                    INSERT INTO PNN_carga_destino (fecha_carga, nombre_archivo, id_PNN_destino, id_PNN_usuario)  
-                    VALUES (@fecha_carga, @nombre_archivo, @id_PNN_destino, @id_PNN_usuario);
+                    INSERT INTO PNN_carga_destino (name, numero_registros, peso_archivo, fecha_carga, formato_archivo, id_PNN_destino, id_PNN_usuario)  
+                    VALUES (@name, @numero_registros, @peso_archivo, @fecha_carga, @formato_archivo, @id_PNN_destino, @id_PNN_usuario);
 
                 ";
                 using (IDbConnection conn = new SqlConnection(Global.ConnectionString)) // utilizar la cadena de conexion que establecimos en el archivo Startup.cs
@@ -66,8 +66,11 @@ namespace PlanNacionalNumeracion.Services
 
                     int id = conn.ExecuteScalar<int>(insert, new
                     {
+                        name = cargaDestinoPost.Name,
+                        numero_registros = cargaDestinoPost.NumeroRegistro,
+                        peso_archivo = cargaDestinoPost.PesoArchivo,
                         fecha_carga = cargaDestinoPost.FechaCarga,
-                        nombre_archivo = cargaDestinoPost.NombreArchivo,
+                        formato_archivo = cargaDestinoPost.FormatoArchivo,
                         id_PNN_destino = cargaDestinoPost.IdPnnDestino,
                         id_PNN_usuario = cargaDestinoPost.IdPnnUsuario
 
@@ -129,7 +132,7 @@ namespace PlanNacionalNumeracion.Services
                             response.Add(uploaded);
                             break;
                         }
-                        var guardadoEnBd = AgregarCargaDestino(new CargaDestinoPost() { FechaCarga = DateTime.Now, IdPnnDestino = id, IdPnnUsuario = 1, NombreArchivo = archivo.FileName });
+                        var guardadoEnBd = AgregarCargaDestino(new CargaDestinoPost() { FechaCarga = DateTime.Now, IdPnnDestino = id, IdPnnUsuario = 1, FormatoArchivo = archivo.FileName });
                         response.Add(new Response()
                         {
                             Status = 0,
